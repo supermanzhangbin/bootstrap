@@ -7,6 +7,7 @@
 .form-control {
   display: block;
   width: 100%;
+  height: $input-height;
   padding: $input-padding-y $input-padding-x;
   font-size: $font-size-base;
   line-height: $input-line-height;
@@ -57,10 +58,6 @@
 }
 
 select.form-control {
-  &:not([size]):not([multiple]) {
-    height: $input-height;
-  }
-
   &:focus::-ms-value {
     // Suppress the nested default white text on blue background highlight given to
     // the selected option text when the (still closed) <select> receives focus
@@ -76,6 +73,7 @@ select.form-control {
 .form-control-file,
 .form-control-range {
   display: block;
+  width: 100%;
 }
 
 
@@ -120,6 +118,7 @@ select.form-control {
   padding-bottom: $input-padding-y;
   margin-bottom: 0; // match inputs if this class comes on inputs with default margins
   line-height: $input-line-height;
+  color: $input-plaintext-color;
   background-color: transparent;
   border: solid transparent;
   border-width: $input-border-width 0;
@@ -137,35 +136,36 @@ select.form-control {
 // Build on `.form-control` with modifier classes to decrease or increase the
 // height and font-size of form controls.
 //
-// The `.form-group-* form-control` variations are sadly duplicated to avoid the
-// issue documented in https://github.com/twbs/bootstrap/issues/15074.
+// Repeated in `_input_group.scss` to avoid Sass extend issues.
 
 .form-control-sm {
+  height: $input-height-sm;
   padding: $input-padding-y-sm $input-padding-x-sm;
   font-size: $font-size-sm;
   line-height: $input-line-height-sm;
   @include border-radius($input-border-radius-sm);
 }
 
-select.form-control-sm {
-  &:not([size]):not([multiple]) {
-    height: $input-height-sm;
-  }
-}
-
 .form-control-lg {
+  height: $input-height-lg;
   padding: $input-padding-y-lg $input-padding-x-lg;
   font-size: $font-size-lg;
   line-height: $input-line-height-lg;
   @include border-radius($input-border-radius-lg);
 }
 
-select.form-control-lg {
-  &:not([size]):not([multiple]) {
-    height: $input-height-lg;
+// stylelint-disable no-duplicate-selectors
+select.form-control {
+  &[size],
+  &[multiple] {
+    height: auto;
   }
 }
 
+textarea.form-control {
+  height: auto;
+}
+// stylelint-enable no-duplicate-selectors
 
 // Form groups
 //
@@ -207,33 +207,35 @@ select.form-control-lg {
 .form-check {
   position: relative;
   display: block;
-  margin-bottom: $form-check-margin-bottom;
-
-  &.disabled {
-    .form-check-label {
-      color: $text-muted;
-    }
-  }
-}
-
-.form-check-label {
   padding-left: $form-check-input-gutter;
-  margin-bottom: 0; // Override default `<label>` bottom margin
 }
 
 .form-check-input {
   position: absolute;
   margin-top: $form-check-input-margin-y;
   margin-left: -$form-check-input-gutter;
+
+  &:disabled ~ .form-check-label {
+    color: $text-muted;
+  }
 }
 
-// Radios and checkboxes on same line
+.form-check-label {
+  margin-bottom: 0; // Override default `<label>` bottom margin
+}
+
 .form-check-inline {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0; // Override base .form-check
   margin-right: $form-check-inline-margin-x;
 
-  .form-check-label {
-    vertical-align: middle;
+  // Undo .form-check-input defaults and add some `margin-right`.
+  .form-check-input {
+    position: static;
+    margin-top: 0;
+    margin-right: $form-check-inline-input-margin-x;
+    margin-left: 0;
   }
 }
 
@@ -299,7 +301,8 @@ select.form-control-lg {
       display: inline-block;
     }
 
-    .input-group {
+    .input-group,
+    .custom-select {
       width: auto;
     }
 
@@ -310,10 +313,6 @@ select.form-control-lg {
       align-items: center;
       justify-content: center;
       width: auto;
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-    .form-check-label {
       padding-left: 0;
     }
     .form-check-input {
@@ -323,23 +322,12 @@ select.form-control-lg {
       margin-left: 0;
     }
 
-    // Custom form controls
     .custom-control {
-      display: flex;
       align-items: center;
       justify-content: center;
-      padding-left: 0;
     }
-    .custom-control-indicator {
-      position: static;
-      display: inline-block;
-      margin-right: $form-check-input-margin-x; // Flexbox alignment means we lose our HTML space here, so we compensate.
-      vertical-align: text-bottom;
-    }
-
-    // Re-override the feedback icon.
-    .has-feedback .form-control-feedback {
-      top: 0;
+    .custom-control-label {
+      margin-bottom: 0;
     }
   }
 }
